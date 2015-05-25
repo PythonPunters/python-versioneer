@@ -10,7 +10,7 @@ setup(name="demoapp2",
       author="author",
       author_email="email",
       packages=["demo"],
-      package_dir={"demo": "src/demo"},
+      package_dir={"": "src"},
       scripts=["bin/rundemo"],
       cmdclass=commands,
       )

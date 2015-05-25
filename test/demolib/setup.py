@@ -11,6 +11,6 @@ setup(name="demolib",
       author_email="email",
       zip_safe=True,
       packages=["demolib"],
-      package_dir={"demolib": "src/demolib"},
+      package_dir={"": "src"},
       cmdclass=commands,
       )

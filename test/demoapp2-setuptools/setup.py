@@ -11,7 +11,7 @@ setup(name="demoapp2",
       author_email="email",
       zip_safe=True,
       packages=["demo"],
-      package_dir={"demo": "src/demo"},
+      package_dir={"": "src"},
       entry_points={
           'console_scripts': [ 'rundemo = demo.main:run' ],
           },
