@@ -288,7 +288,6 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         indexdir = self.make_empty_indexdir()
         repodir = self.make_setuptools_repo()
-        demolib = self.make_demolib_sdist()
         venv = self.make_venv("setuptools-repo-develop")
         # "setup.py develop" takes --find-links and --index-url but not
         # --no-index
