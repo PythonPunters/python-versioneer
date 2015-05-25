@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import os, sys, shutil, unittest, tempfile
+import os, sys, shutil, unittest, tempfile, tarfile
 
 sys.path.insert(0, "src")
 from from_file import versions_from_file
@@ -53,7 +53,7 @@ class _Invocations(common.Common):
     def make_demolib_sdist(self):
         # create an sdist of demolib-1.0 . for the *lib*, we only use the
         # tarball, never the repo.
-        demolib_sdist = self.subpath("cache", "demolib-1.0.tar.gz")
+        demolib_sdist = self.subpath("cache", "demolib-1.0.tar")
         if os.path.exists(demolib_sdist):
             return demolib_sdist
         libdir = self.subpath("build-demolib")
@@ -64,8 +64,8 @@ class _Invocations(common.Common):
         self.git("add", "--all", workdir=libdir)
         self.git("commit", "-m", "commemt", workdir=libdir)
         self.git("tag", "demolib-1.0", workdir=libdir)
-        self.python("setup.py", "sdist", "--format=gztar", workdir=libdir)
-        created = os.path.join(libdir, "dist", "demolib-1.0.tar.gz")
+        self.python("setup.py", "sdist", "--format=tar", workdir=libdir)
+        created = os.path.join(libdir, "dist", "demolib-1.0.tar")
         self.assertTrue(os.path.exists(created))
         shutil.copyfile(created, demolib_sdist)
         return demolib_sdist
@@ -121,12 +121,12 @@ class _Invocations(common.Common):
     def make_distutils_sdist(self):
         # create an sdist tarball of demoapp2-distutils at 2.0
         demoapp2_distutils_sdist = self.subpath("cache", "distutils",
-                                                "demoapp2-2.0.tar.gz")
+                                                "demoapp2-2.0.tar")
         if os.path.exists(demoapp2_distutils_sdist):
             return demoapp2_distutils_sdist
         repodir = self.make_distutils_repo()
-        self.python("setup.py", "sdist", "--format=gztar", workdir=repodir)
-        created = os.path.join(repodir, "dist", "demoapp2-2.0.tar.gz")
+        self.python("setup.py", "sdist", "--format=tar", workdir=repodir)
+        created = os.path.join(repodir, "dist", "demoapp2-2.0.tar")
         self.assertTrue(os.path.exists(created))
         shutil.copyfile(created, demoapp2_distutils_sdist)
         return demoapp2_distutils_sdist
@@ -137,7 +137,9 @@ class _Invocations(common.Common):
         if os.path.exists(unpack_into):
             shutil.rmtree(unpack_into)
         os.mkdir(unpack_into)
-        self.command("tar", "xf", sdist, workdir=unpack_into)
+        t = tarfile.TarFile(sdist)
+        t.extractall(path=unpack_into)
+        t.close()
         unpacked = os.path.join(unpack_into, "demoapp2-2.0")
         self.assertTrue(os.path.exists(unpacked))
         return unpacked
@@ -159,12 +161,12 @@ class _Invocations(common.Common):
     def make_setuptools_sdist(self):
         # create an sdist tarball of demoapp2-setuptools at 2.0
         demoapp2_setuptools_sdist = self.subpath("cache", "setuptools",
-                                                 "demoapp2-2.0.tar.gz")
+                                                 "demoapp2-2.0.tar")
         if os.path.exists(demoapp2_setuptools_sdist):
             return demoapp2_setuptools_sdist
         repodir = self.make_setuptools_repo()
-        self.python("setup.py", "sdist", "--format=gztar", workdir=repodir)
-        created = os.path.join(repodir, "dist", "demoapp2-2.0.tar.gz")
+        self.python("setup.py", "sdist", "--format=tar", workdir=repodir)
+        created = os.path.join(repodir, "dist", "demoapp2-2.0.tar")
         self.assertTrue(os.path.exists(created))
         shutil.copyfile(created, demoapp2_setuptools_sdist)
         return demoapp2_setuptools_sdist
@@ -175,7 +177,9 @@ class _Invocations(common.Common):
         if os.path.exists(unpack_into):
             shutil.rmtree(unpack_into)
         os.mkdir(unpack_into)
-        self.command("tar", "xf", sdist, workdir=unpack_into)
+        t = tarfile.TarFile(sdist)
+        t.extractall(path=unpack_into)
+        t.close()
         unpacked = os.path.join(unpack_into, "demoapp2-2.0")
         self.assertTrue(os.path.exists(unpacked))
         return unpacked
