@@ -80,6 +80,13 @@ class _Invocations(common.Common):
         shutil.copy(demolib_sdist, linkdir)
         return linkdir
 
+    def make_empty_indexdir(self):
+        indexdir = self.subpath("indexdir")
+        if os.path.exists(indexdir):
+            return indexdir
+        os.mkdir(indexdir)
+        return indexdir
+
     def make_distutils_repo(self):
         # create a clean repo of demoapp2-distutils at 2.0
         repodir = self.subpath("demoapp2-distutils-repo")
@@ -279,13 +286,15 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
 
     def test_develop(self):
         linkdir = self.make_linkdir()
+        indexdir = self.make_empty_indexdir()
         repodir = self.make_setuptools_repo()
         demolib = self.make_demolib_sdist()
         venv = self.make_venv("setuptools-repo-develop")
-        self.run_in_venv(venv, venv, "pip", "install", demolib)
+        # "setup.py develop" takes --find-links and --index-url but not
+        # --no-index
         self.run_in_venv(venv, repodir,
                          "python", "setup.py", "develop",
-                         "--no-index", "--find-links", linkdir,
+                         "--index-url", indexdir, "--find-links", linkdir,
                          )
         self.check_in_venv_withlib(venv)
 
