@@ -262,19 +262,20 @@ class DistutilsRepo(_Invocations, unittest.TestCase):
     def test_pip_install(self):
         repodir = self.make_distutils_repo()
         venv = self.make_venv("distutils-repo-pip-install")
-        self.run_in_venv(venv, repodir, "pip", "install", ".")
+        self.run_in_venv(venv, repodir, "pip", "--isolated", "install", ".")
         self.check_in_venv(venv)
 
     def test_pip_install_from_afar(self):
         repodir = self.make_distutils_repo()
         venv = self.make_venv("distutils-repo-pip-install-from-afar")
-        self.run_in_venv(venv, venv, "pip", "install", repodir)
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", repodir)
         self.check_in_venv(venv)
 
     def test_pip_install_editable(self):
         repodir = self.make_distutils_repo()
         venv = self.make_venv("distutils-repo-pip-install-editable")
-        self.run_in_venv(venv, repodir, "pip", "install", "--editable", ".")
+        self.run_in_venv(venv, repodir, "pip", "--isolated",
+                         "install", "--editable", ".")
         self.check_in_venv(venv)
 
 class SetuptoolsRepo(_Invocations, unittest.TestCase):
@@ -284,7 +285,7 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
         venv = self.make_venv("setuptools-repo-install")
         # "setup.py install" doesn't take --no-index or --find-links, so we
         # pre-install the dependency
-        self.run_in_venv(venv, venv, "pip", "install", demolib)
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", demolib)
         self.run_in_venv(venv, repodir, "python", "setup.py", "install")
         self.check_in_venv_withlib(venv)
 
@@ -319,7 +320,7 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         repodir = self.make_setuptools_repo()
         venv = self.make_venv("setuptools-repo-pip-install")
-        self.run_in_venv(venv, repodir, "pip", "install", ".",
+        self.run_in_venv(venv, repodir, "pip", "--isolated", "install", ".",
                          "--no-index", "--find-links", linkdir)
         self.check_in_venv_withlib(venv)
 
@@ -327,7 +328,7 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         repodir = self.make_setuptools_repo()
         venv = self.make_venv("setuptools-repo-pip-install-from-afar")
-        self.run_in_venv(venv, venv, "pip", "install", repodir,
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", repodir,
                          "--no-index", "--find-links", linkdir)
         self.check_in_venv_withlib(venv)
 
@@ -335,7 +336,8 @@ class SetuptoolsRepo(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         repodir = self.make_setuptools_repo()
         venv = self.make_venv("setuptools-repo-pip-install-editable")
-        self.run_in_venv(venv, repodir, "pip", "install", "--editable", ".",
+        self.run_in_venv(venv, repodir, "pip", "--isolated",
+                         "install", "--editable", ".",
                          "--no-index", "--find-links", linkdir)
         self.check_in_venv_withlib(venv)
 
@@ -344,7 +346,7 @@ class DistutilsSdist(_Invocations, unittest.TestCase):
         sdist = self.make_distutils_sdist()
         venv = self.make_venv("distutils-sdist-pip-install")
         self.run_in_venv(venv, venv,
-                         "pip", "install",
+                         "pip", "--isolated", "install",
                          sdist)
         self.check_in_venv(venv)
 
@@ -354,7 +356,7 @@ class SetuptoolsSdist(_Invocations, unittest.TestCase):
         sdist = self.make_setuptools_sdist()
         venv = self.make_venv("setuptools-sdist-pip-install")
         self.run_in_venv(venv, venv,
-                         "pip", "install",
+                         "pip", "--isolated", "install",
                          "--no-index", "--find-links", linkdir,
                          sdist)
         self.check_in_venv_withlib(venv)
@@ -365,7 +367,7 @@ class SetuptoolsWheel(_Invocations, unittest.TestCase):
         wheel = self.make_setuptools_wheel_with_setup_py()
         venv = self.make_venv("setuptools-wheel-pip-install")
         self.run_in_venv(venv, venv,
-                         "pip", "install",
+                         "pip", "--isolated", "install",
                          "--no-index", "--find-links", linkdir,
                          wheel)
         self.check_in_venv_withlib(venv)
@@ -401,13 +403,13 @@ class DistutilsUnpacked(_Invocations, unittest.TestCase):
     def test_pip_install(self):
         repodir = self.make_distutils_unpacked()
         venv = self.make_venv("distutils-unpacked-pip-install")
-        self.run_in_venv(venv, repodir, "pip", "install", ".")
+        self.run_in_venv(venv, repodir, "pip", "--isolated", "install", ".")
         self.check_in_venv(venv)
 
     def test_pip_install_from_afar(self):
         repodir = self.make_distutils_unpacked()
         venv = self.make_venv("distutils-unpacked-pip-install-from-afar")
-        self.run_in_venv(venv, venv, "pip", "install", repodir)
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", repodir)
         self.check_in_venv(venv)
 
 class SetuptoolsUnpacked(_Invocations, unittest.TestCase):
@@ -417,7 +419,7 @@ class SetuptoolsUnpacked(_Invocations, unittest.TestCase):
         venv = self.make_venv("setuptools-unpacked-install")
         # "setup.py install" doesn't take --no-index or --find-links, so we
         # pre-install the dependency
-        self.run_in_venv(venv, venv, "pip", "install", demolib)
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", demolib)
         self.run_in_venv(venv, unpacked,
                          "python", "setup.py", "install")
         self.check_in_venv_withlib(venv)
@@ -445,7 +447,7 @@ class SetuptoolsUnpacked(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         repodir = self.make_setuptools_unpacked()
         venv = self.make_venv("setuptools-unpacked-pip-install")
-        self.run_in_venv(venv, repodir, "pip", "install", ".",
+        self.run_in_venv(venv, repodir, "pip", "--isolated", "install", ".",
                          "--no-index", "--find-links", linkdir)
         self.check_in_venv_withlib(venv)
 
@@ -453,7 +455,7 @@ class SetuptoolsUnpacked(_Invocations, unittest.TestCase):
         linkdir = self.make_linkdir()
         repodir = self.make_setuptools_unpacked()
         venv = self.make_venv("setuptools-unpacked-pip-install-from-afar")
-        self.run_in_venv(venv, venv, "pip", "install", repodir,
+        self.run_in_venv(venv, venv, "pip", "--isolated", "install", repodir,
                          "--no-index", "--find-links", linkdir)
         self.check_in_venv_withlib(venv)
 
