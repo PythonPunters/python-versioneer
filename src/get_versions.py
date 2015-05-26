@@ -5,12 +5,47 @@ def versions_from_parentdir(): pass # --STRIP DURING BUILD
 def render(): pass # --STRIP DURING BUILD
 class NotThisMethod(Exception): pass  # --STRIP DURING BUILD
 
-def get_root():
-    try:
-        return os.path.dirname(os.path.abspath(__file__))
-    except NameError:
-        return os.path.dirname(os.path.abspath(sys.argv[0]))
+class VersioneerBadRootError(Exception):
+    pass
 
+def get_root():
+    # we require that all commands are run from the project root, i.e. the
+    # directory that contains setup.py, setup.cfg, and versioneer.py .
+    root = os.path.realpath(os.path.abspath(os.getcwd()))
+    setup_py = os.path.join(root, "setup.py")
+    versioneer_py = os.path.join(root, "versioneer.py")
+    if not (os.path.exists(setup_py) or os.path.exists(versioneer_py)):
+        # allow 'python path/to/setup.py COMMAND'
+        root = os.path.dirname(os.path.realpath(os.path.abspath(sys.argv[0])))
+        setup_py = os.path.join(root, "setup.py")
+        versioneer_py = os.path.join(root, "versioneer.py")
+    if not (os.path.exists(setup_py) or os.path.exists(versioneer_py)):
+        err = ("Versioneer was unable to run the project root directory. "
+               "Versioneer requires setup.py to be executed from "
+               "its immediate directory (like 'python setup.py COMMAND'), "
+               "or in a way that lets it use sys.argv[0] to find the root "
+               "(like 'python path/to/setup.py COMMAND').")
+        raise VersioneerBadRootError(err)
+    try:
+        # Certain runtime workflows (setup.py install/develop in a setuptools
+        # tree) execute all dependencies in a single python process, so
+        # "versioneer" may be imported multiple times, and python's shared
+        # module-import table will cache the first one. So we can't use
+        # os.path.dirname(__file__), as that will find whichever
+        # versioneer.py was first imported, even in later projects.
+        me = os.path.realpath(os.path.abspath(__file__))
+        if os.path.splitext(me)[0] != os.path.splitext(versioneer_py)[0]:
+            print("Warning: build in %s is using versioneer.py from %s"
+                  % (os.path.dirname(me), versioneer_py))
+            #print("\n", file=sys.stderr)
+            #print("me:", me, file=sys.stderr)
+            #print("vp:", versioneer_py, file=sys.stderr)
+            #print("os.getcwd():", os.getcwd(), file=sys.stderr)
+            #print("sys.argv[0]:", sys.argv[0], file=sys.stderr)
+            #print("__file__:", __file__, file=sys.stderr)
+    except NameError:
+        pass
+    return root
 
 def vcs_function(vcs, suffix):
     return getattr(sys.modules[__name__], '%s_%s' % (vcs, suffix), None)
